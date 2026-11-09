@@ -1,0 +1,9 @@
+﻿concours.rar
+*.sql
+connect.php
+phpinfo.php
+adminer.php
+test.php
+*Copie*
+plugins/
+dist/
