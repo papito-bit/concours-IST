@@ -1,60 +1,50 @@
 <?php
-session_start();
-require_once '../../scripts/config.inc.php'; // fichier avec connexion PDO ou MySQLi
+require_once __DIR__ . '/auth.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    exit('Méthode non autorisée.');
+}
+csrf_require();
+require_once __DIR__ . '/connect.php';
+require_once __DIR__ . '/journal_helper.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
-    $email = trim($_POST['email']);
+$email = trim((string) ($_POST['email'] ?? ''));
+$generic = ['success' => true, 'message' => 'Si cette adresse est associée à un compte, un lien de réinitialisation sera envoyé.'];
+header('Content-Type: application/json; charset=utf-8');
 
-    // Vérifier si l'email existe dans la BDD
-    $stmt = $pdo->prepare("SELECT id, email FROM concours_utilisateurs WHERE email = ?");
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    http_response_code(200);
+    echo json_encode($generic);
+    exit;
+}
+$baseUrl = rtrim((string) getenv('APP_BASE_URL'), '/');
+if ($baseUrl === '' || !preg_match('~^https://[a-z0-9.-]+(?::[0-9]+)?(?:/[^\s]*)?$~i', $baseUrl)) {
+    error_log('Réinitialisation: APP_BASE_URL manquant ou invalide.');
+    echo json_encode($generic);
+    exit;
+}
+
+try {
+    $stmt = $bdd->prepare('SELECT id_utilisateur, email FROM utilisateur WHERE email = ? LIMIT 1');
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
     if ($user) {
-        // Génération d'un token sécurisé
         $token = bin2hex(random_bytes(32));
-        $expiration = date('Y-m-d H:i:s', time() + 3600); // 1 heure de validité
-
-        // Sauvegarde du token dans la BDD
-        $stmt = $pdo->prepare("UPDATE concours_utilisateurs SET reset_token = ?, reset_expires = ? WHERE id = ?");
-        $stmt->execute([$token, $expiration, $user['id']]);
-
-        // Lien de réinitialisation
-        $resetLink = "https://ton-domaine.com/nouveau_mot_de_passe.php?token=" . $token;
-
-        // Envoi email
-        $sujet = "Réinitialisation de votre mot de passe - Concours IST-D";
-        $message = "
-        Bonjour,
-
-        Vous avez demandé à réinitialiser votre mot de passe pour la plateforme Concours IST-D.
-        Cliquez sur le lien ci-dessous pour créer un nouveau mot de passe (valide 1 heure) :
-
-        $resetLink
-
-        Si vous n'avez pas fait cette demande, ignorez cet email.
-        
-        -- 
-        Service Concours IST-D
-        ";
-
-        $headers = "From: concours@istd.mg\r\n";
-        $headers .= "Reply-To: concours@istd.mg\r\n";
-        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-
-        if (mail($email, $sujet, $message, $headers)) {
-            header("Location: mot_de_passe_oublie.php?message=" . urlencode("Un email de réinitialisation a été envoyé."));
-            exit();
-        } else {
-            header("Location: mot_de_passe_oublie.php?message=" . urlencode("Erreur lors de l'envoi de l'email."));
-            exit();
+        $tokenHash = hash('sha256', $token);
+        $expiry = date('Y-m-d H:i:s', time() + 3600);
+        $save = $bdd->prepare('UPDATE utilisateur SET reset_token = ?, reset_expires = ? WHERE id_utilisateur = ?');
+        $save->execute([$tokenHash, $expiry, (int) $user['id_utilisateur']]);
+        $link = $baseUrl . '/nouveau_mot_de_passe.php?token=' . rawurlencode($token);
+        $subject = 'Réinitialisation du mot de passe - Concours IST-D';
+        $body = "Bonjour,\n\nUtilisez ce lien dans l’heure pour choisir un nouveau mot de passe :\n$link\n\nSi vous n’êtes pas à l’origine de cette demande, ignorez ce message.\n";
+        $from = getenv('APP_RESET_FROM') ?: 'concours@istd.mg';
+        $headers = 'From: ' . str_replace(["\r", "\n"], '', $from) . "\r\nContent-Type: text/plain; charset=UTF-8\r\n";
+        if (!mail($user['email'], $subject, $body, $headers)) {
+            error_log('Échec de livraison du courriel de réinitialisation pour utilisateur ' . (int) $user['id_utilisateur']);
         }
-    } else {
-        // Email non trouvé
-        header("Location: mot_de_passe_oublie.php?message=" . urlencode("Aucun compte trouvé avec cet email."));
-        exit();
     }
-} else {
-    header("Location: mot_de_passe_oublie.php");
-    exit();
+} catch (Throwable $e) {
+    error_log('Demande de réinitialisation échouée: ' . $e->getMessage());
 }
+echo json_encode($generic);

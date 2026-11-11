@@ -1,36 +1,50 @@
 <?php
 require_once __DIR__ . '/auth.php';
 exiger_role(['superadmin', 'admin']);
-require 'connect.php';
+require_once __DIR__ . '/connect.php';
 require_once __DIR__ . '/journal_helper.php';
 
-$nom    = trim($_POST['nom'] ?? '');
-$prenom = trim($_POST['prenom'] ?? '');
-$email  = trim($_POST['email'] ?? '');
-$pseudo = trim($_POST['pseudo'] ?? '');
-$mdp    = $_POST['mdp'] ?? '';
-$role   = $_POST['id_role'] ?? '';   // libellé du rôle choisi dans le formulaire
-
-// Un admin ne peut pas créer un superadmin
-if ($role === 'superadmin' && strtolower($_SESSION['groupe']) !== 'superadmin') {
-    exit('Accès refusé.');
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    exit('Méthode non autorisée.');
 }
-if ($pseudo === '' || $mdp === '') {
-    exit("Erreur : le pseudo et le mot de passe sont obligatoires. <a href='ajout_utili.php'>Retour</a>");
+csrf_require();
+
+$nom = trim((string) ($_POST['nom'] ?? ''));
+$prenom = trim((string) ($_POST['prenom'] ?? ''));
+$email = trim((string) ($_POST['email'] ?? ''));
+$pseudo = trim((string) ($_POST['pseudo'] ?? ''));
+$mdp = (string) ($_POST['mdp'] ?? '');
+$role = strtolower(trim((string) ($_POST['id_role'] ?? '')));
+$rolesAutorises = ['visiteur', 'operateur', 'controleur', 'admin', 'superadmin'];
+
+if ($nom === '' || $prenom === '' || $pseudo === '' || strlen($mdp) < 10 || !filter_var($email, FILTER_VALIDATE_EMAIL) || !in_array($role, $rolesAutorises, true)) {
+    http_response_code(422);
+    exit('Données invalides. Le mot de passe doit contenir au moins 10 caractères.');
+}
+if ($role === 'superadmin' && strtolower((string) $_SESSION['groupe']) !== 'superadmin') {
+    http_response_code(403);
+    exit('Seul un superadministrateur peut créer un superadministrateur.');
 }
 
-$req = $bdd->prepare('INSERT INTO utilisateur (nom, prenom, email, pseudo, mdp, id_role)
-                      VALUES (?, ?, ?, ?, ?, (SELECT id_role FROM roles WHERE libelle = ?))');
+$roleStmt = $bdd->prepare('SELECT id_role, libelle FROM roles WHERE LOWER(libelle) = ? LIMIT 1');
+$roleStmt->execute([$role]);
+$roleRow = $roleStmt->fetch(PDO::FETCH_ASSOC);
+if (!$roleRow) {
+    http_response_code(422);
+    exit('Rôle invalide.');
+}
+
 try {
-    $ok = $req->execute([$nom, $prenom, $email, $pseudo, password_hash($mdp, PASSWORD_DEFAULT), $role]);
-} catch (PDOException $e) {
-    $ok = false;
-}
-
-if ($ok) {
-    journaliser('utilisateur_ajout', 'Compte ' . $pseudo . ' (rôle ' . $role . ')', 'utilisateur', (int) $bdd->lastInsertId());
-    notifier('Nouvel utilisateur : ' . $pseudo . ' (' . $role . ')', 'journal.php?action=utilisateur_ajout');
+    $stmt = $bdd->prepare('INSERT INTO utilisateur (nom, prenom, email, pseudo, mdp, id_role) VALUES (?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$nom, $prenom, $email, $pseudo, password_hash($mdp, PASSWORD_DEFAULT), (int) $roleRow['id_role']]);
+    $id = (int) $bdd->lastInsertId();
+    journaliser('utilisateur_ajout', 'Compte ' . $pseudo . ' (rôle ' . $roleRow['libelle'] . ')', 'utilisateur', $id);
     header('Location: utilisateur.php');
     exit;
+} catch (PDOException $e) {
+    error_log('Création utilisateur échouée: ' . $e->getMessage());
+    http_response_code(409);
+    exit('Création impossible : vérifiez que le pseudo et l’adresse courriel ne sont pas déjà utilisés.');
 }
-echo "Erreur d'enregistrement : pseudo déjà utilisé ou rôle invalide. <a href='ajout_utili.php'>Retour</a>";

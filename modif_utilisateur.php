@@ -1,88 +1,45 @@
 <?php
+require_once __DIR__ . '/auth.php';
+exiger_role(['superadmin', 'admin']);
+require_once __DIR__ . '/connect.php';
+$id = filter_input(INPUT_GET, 'id_utili', FILTER_VALIDATE_INT);
+if (!$id) {
+    header('Location: utilisateur.php');
+    exit;
+}
+$stmt = $bdd->prepare('SELECT id_utilisateur, nom, prenom, email, pseudo, id_role FROM utilisateur WHERE id_utilisateur = ?');
+$stmt->execute([$id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$user) {
+    http_response_code(404);
+    exit('Utilisateur introuvable.');
+}
+if ((int) $user['id_role'] === 1 && strtolower((string) $_SESSION['groupe']) !== 'superadmin') {
+    http_response_code(403);
+    exit('Accès refusé.');
+}
+$roles = $bdd->query('SELECT id_role, libelle FROM roles ORDER BY id_role')->fetchAll(PDO::FETCH_ASSOC);
 ob_start();
-
-session_start();
-
-
-require('connect.php');
-if (isset($_GET["id_utili"])) {$change=$_GET["id_utili"];} else {header("Location:index.php");}
-
-   $changement=$bdd->query("SELECT * FROM utilisateur WHERE id_utilisateur=$change");
-     $champ=$changement->fetch();
-
 ?>
-
-
-
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Modification utilisateur</h3>
-              </div>
-              <!-- /.card-header -->
-              <!-- form start -->
-              <form action="action_modif_utili.php" method="POST">
-                
-
-<div class="card-body">
-  <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="nom">Nom</label>
-                    <input type="text" class="form-control" name="nom" value="<?php echo $champ['nom']; ?>" >
-                  </div>
-                  <div class="form-group  col-md-6">
-                    <label for="">Prénoms</label>
-                    <input type="text" class="form-control" name="prenom" value="<?php echo $champ['prenom']; ?>">
-                  </div>
+<div class="card card-primary"><div class="card-header"><h3 class="card-title">Modifier l’utilisateur</h3></div>
+<form action="action_modif_utili.php" method="post">
+  <?= csrf_field() ?>
+  <input type="hidden" name="id_util" value="<?= (int) $user['id_utilisateur'] ?>">
+  <div class="card-body">
+    <div class="form-group"><label>Nom</label><input class="form-control" name="nom" value="<?= h($user['nom']) ?>" required></div>
+    <div class="form-group"><label>Prénom</label><input class="form-control" name="prenom" value="<?= h($user['prenom']) ?>" required></div>
+    <div class="form-group"><label>Courriel</label><input class="form-control" type="email" name="email" value="<?= h($user['email']) ?>" required></div>
+    <div class="form-group"><label>Pseudo</label><input class="form-control" name="pseudo" value="<?= h($user['pseudo']) ?>" required></div>
+    <div class="form-group"><label>Nouveau mot de passe <small>(laisser vide pour ne pas le modifier; 10 caractères minimum)</small></label><input class="form-control" type="password" name="mdp" minlength="10" autocomplete="new-password"></div>
+    <div class="form-group"><label>Rôle</label><select class="form-control" name="id_role" required>
+      <?php foreach ($roles as $role): if (!$actorIsSuperadmin && (int) $role['id_role'] === 1) continue; ?>
+        <option value="<?= (int) $role['id_role'] ?>" <?= (int) $role['id_role'] === (int) $user['id_role'] ? 'selected' : '' ?>><?= h($role['libelle']) ?></option>
+      <?php endforeach; ?>
+    </select></div>
   </div>
-
-    <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="nom">Mail</label>
-                    <input type="email" class="form-control" name="email" value="<?php echo $champ['email']; ?>">
-                  </div>
-                  <div class="form-group  col-md-6">
-                    <label for="">Pseudo</label>
-                    <input type="text" class="form-control" name="pseudo" value="<?php echo $champ['pseudo']; ?>">
-                  </div>
-    </div>
-
-
-    <div class="row">
-                  <div class="form-group col-md-6">
-                    <label for="nom">Mot de passe</label>
-                    <input type="password" class="form-control" name="mdp" value="<?php echo $champ['mdp']; ?>">
-                  </div>
-                  <div class="form-group  col-md-6">
-                    <label for="">Groupe</label>
-                    <select class="form-control" name="id_role">
-                      <option value="<?php echo $champ['id_role']; ?>"><?php echo $champ['id_role']; ?></option>
-                      <option value="5">Visiteur</option>
-                      <option value="4">Operateur</option>
-                      <option value="3">Controleur</option>
-                      <option value="2">Administrateur</option>
-                      <option value="1">SuperAdministrateur</option>
-                    </select>
-                  </div>
-    </div>
-
-
-                <!-- /.card-body -->
-
-</div>
-
-<input type="hidden" name="id_util" value="<?php echo $change;?> ">
-
-                <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">Enregistrer la modification</button>
-                </div>
-
-              </form>
-            </div>
-
-
-
-<?php $content = ob_get_clean();
-$menu = "Nouveau utilisateur";
-$menu_utili=""; 
-?>
-<?php require('template.php'); ?>
+  <div class="card-footer"><button class="btn btn-primary" type="submit">Enregistrer</button><a class="btn btn-secondary" href="utilisateur.php">Annuler</a></div>
+</form></div>
+<?php
+$content = ob_get_clean();
+$menu = 'Modification utilisateur';
+require __DIR__ . '/template.php';
