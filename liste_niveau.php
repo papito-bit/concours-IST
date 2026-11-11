@@ -17,13 +17,13 @@ $niveaux = $req->fetchAll(PDO::FETCH_COLUMN);
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h3 class="card-title">Liste des candidats par niveau et parcours</h3>
-    <button class="btn btn-sm btn-secondary" onclick="window.print()">🖨️ Imprimer</button>
+    <button class="btn btn-sm btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Imprimer</button>
   </div>
 
   <div class="card-body p-3">
 
     <?php if(empty($niveaux)): ?>
-      <p class="text-center text-danger">⚠ Aucun niveau trouvé pour cette année.</p>
+      <p class="text-center text-danger"><i class="fas fa-exclamation-triangle"></i> Aucun niveau trouvé pour cette année.</p>
     <?php else: ?>
 
       <!-- Onglets principaux : niveaux -->
@@ -59,7 +59,7 @@ $niveaux = $req->fetchAll(PDO::FETCH_COLUMN);
             ?>
 
             <?php if(empty($parcoursList)): ?>
-              <p class="text-center text-danger">⚠ Aucun parcours trouvé pour le niveau <?= htmlspecialchars($niveau) ?>.</p>
+              <p class="text-center text-danger"><i class="fas fa-exclamation-triangle"></i> Aucun parcours trouvé pour le niveau <?= htmlspecialchars($niveau) ?>.</p>
             <?php else: ?>
 
               <!-- Sous-onglets : parcours -->
@@ -96,7 +96,7 @@ $niveaux = $req->fetchAll(PDO::FETCH_COLUMN);
                     ?>
 
                     <?php if(empty($candidats)): ?>
-                      <p class="text-center text-danger">⚠ Aucun candidat trouvé pour <?= htmlspecialchars($parcours) ?>.</p>
+                      <p class="text-center text-danger"><i class="fas fa-exclamation-triangle"></i> Aucun candidat trouvé pour <?= htmlspecialchars($parcours) ?>.</p>
                     <?php else: ?>
                       <div class="table-responsive">
                         <table class="table table-bordered table-striped">

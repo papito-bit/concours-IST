@@ -93,7 +93,7 @@ body {
   <div class="card-header d-flex justify-content-between align-items-center">
     <h3 class="card-title">Étiquettes des candidats</h3>
     <button id="btnPrint" class="btn btn-sm btn-secondary" onclick="window.print();">
-      🖨 Imprimer
+      <i class="fas fa-print"></i> Imprimer
     </button>
   </div>
 

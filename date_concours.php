@@ -147,7 +147,7 @@ $dates = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <i class="fas fa-edit"></i>
                 </button>
                 <a href="?delete=<?= $d['ID'] ?>" class="btn btn-sm btn-danger" 
-                   onclick="return confirm('Supprimer cette date ?')">
+                   onclick="return confirm('Confirmez-vous la suppression de cette date ?')">
                   <i class="fas fa-trash"></i>
                 </a>
               </td>

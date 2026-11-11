@@ -14,7 +14,7 @@ $niveau = "DTS";
 // === AJOUT D’UN CENTRE ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'ajouter_centre') {
     $nomCentre = trim($_POST['nom_centre']);
-    $id_annee = $_SESSION["id_annee_selected"] ?? 1; // ✅ lie à l'année active
+    $id_annee = $_SESSION["id_annee_selected"] ?? 1; // lie à l'année active
 
     if (!empty($nomCentre)) {
         $stmt = $bdd->prepare("INSERT INTO centre (nom_centre, id_annee) VALUES (?, ?)");
@@ -83,7 +83,7 @@ body { background: #f8f9fa; }
 .signature { height: 35px; }
 .page-break { page-break-before: always; }
 
-/* ✅ Masquer certains éléments à l'impression */
+/* Masquer certains éléments à l'impression */
 @media print {
   #btnPrint, #btnRepartir, #btnAddSalle, #btnAddCentre, #btnDeleteSalle, .nav-tabs, .card-header, form, .no-print {
       display: none !important;
@@ -99,11 +99,11 @@ body { background: #f8f9fa; }
     <div class="card-header d-flex justify-content-between align-items-center">
       <h3 class="card-title">Fiche de présence — DTS</h3>
       <div>
-        <button class="btn btn-sm btn-success" id="btnAddCentre" data-bs-toggle="modal" data-bs-target="#addCentreModal">🏫 Ajouter centre</button>
-        <button class="btn btn-sm btn-success" id="btnAddSalle" data-bs-toggle="modal" data-bs-target="#addSalleModal">➕ Ajouter salle</button>
-        <button class="btn btn-sm btn-danger" id="btnDeleteSalle" data-bs-toggle="modal" data-bs-target="#deleteSalleModal">🗑 Supprimer salle</button>
-        <a href="#" id="btnRepartir" class="btn btn-sm btn-primary" onclick="return confirmRepartir();">⚙ Répartir automatiquement</a>
-        <button id="btnPrint" class="btn btn-sm btn-secondary" onclick="window.print();">🖨 Imprimer</button>
+        <button class="btn btn-sm btn-success" id="btnAddCentre" data-bs-toggle="modal" data-bs-target="#addCentreModal"><i class="fas fa-school"></i> Ajouter un centre</button>
+        <button class="btn btn-sm btn-success" id="btnAddSalle" data-bs-toggle="modal" data-bs-target="#addSalleModal"><i class="fas fa-plus"></i> Ajouter une salle</button>
+        <button class="btn btn-sm btn-danger" id="btnDeleteSalle" data-bs-toggle="modal" data-bs-target="#deleteSalleModal"><i class="fas fa-trash"></i> Supprimer une salle</button>
+        <a href="#" id="btnRepartir" class="btn btn-sm btn-primary" onclick="return confirmRepartir();"><i class="fas fa-cogs"></i> Répartir automatiquement</a>
+        <button id="btnPrint" class="btn btn-sm btn-secondary" onclick="window.print();"><i class="fas fa-print"></i> Imprimer</button>
       </div>
     </div>
 
@@ -143,7 +143,7 @@ body { background: #f8f9fa; }
             Niveau : <strong><?= $niveau; ?></strong> |
             Salle : <strong><?= htmlspecialchars($salle['nom_salle']); ?></strong> |
             Capacité : <strong><?= $salle['capacite'] ?? '—'; ?></strong>
-            <!-- ✅ Bouton "Modifier" masqué à l'impression -->
+            <!-- Bouton "Modifier" masqué à l'impression -->
             <button class="btn btn-sm btn-outline-secondary ms-2 no-print"
                     data-bs-toggle="modal"
                     data-bs-target="#editCapaciteModal<?= $salle['id_salle'] ?>">
@@ -216,7 +216,7 @@ body { background: #f8f9fa; }
   </div>
 </div>
 
-<!-- ✅ MODAL AJOUT CENTRE -->
+<!-- MODAL AJOUT CENTRE -->
 <div class="modal fade" id="addCentreModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -241,7 +241,7 @@ body { background: #f8f9fa; }
   </div>
 </div>
 
-<!-- ✅ MODAL AJOUT SALLE -->
+<!-- MODAL AJOUT SALLE -->
 <div class="modal fade" id="addSalleModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -286,7 +286,7 @@ body { background: #f8f9fa; }
             <?php foreach ($salles as $s): ?>
               <li class="list-group-item d-flex justify-content-between align-items-center">
                 <?= htmlspecialchars($s['nom_salle']); ?>
-                <a href="?centre=<?= $centreActif ?>&supprimer_salle=<?= $s['id_salle'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette salle ?');">Supprimer</a>
+                <a href="?centre=<?= $centreActif ?>&supprimer_salle=<?= $s['id_salle'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Confirmez-vous la suppression de cette salle ?');">Supprimer</a>
               </li>
             <?php endforeach; ?>
           </ul>

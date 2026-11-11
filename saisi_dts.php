@@ -161,7 +161,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             <select class="form-control" name="centre" required>
                 <option></option>
                 <?php
-                // ✅ Tous les centres, peu importe id_annee
+                // Tous les centres, peu importe id_annee
                 $centres = $bdd->query("SELECT * FROM centre ORDER BY nom_centre ASC")->fetchAll(PDO::FETCH_ASSOC);
                 foreach ($centres as $c) {
                     echo '<option value="' . htmlspecialchars($c['nom_centre']) . '">' . htmlspecialchars($c['nom_centre']) . '</option>';

@@ -17,6 +17,7 @@ $search = trim($_GET['search'] ?? '');
 
 // ---------- Enregistrement AJAX ----------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_save'])) {
+    require_once __DIR__ . '/journal_helper.php';
     $id_candidat = $_POST['id_candidat'];
     $notes = $_POST['notes'] ?? [];
     $moyenne = $_POST['moyenne'] ?? null;
@@ -50,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_save'])) {
         }
     }
 
+    journaliser('notes_saisie', 'Moyenne ' . $moyenne . ' (candidat n°' . (int) $id_candidat . ')', 'candidat', (int) $id_candidat);
     echo json_encode(['success' => true]);
     exit;
 }
@@ -195,8 +197,8 @@ $admis = $admis_stmt->fetchAll(PDO::FETCH_ASSOC);
       <!-- Onglet 2 : Liste des admis -->
       <div class="tab-pane fade" id="admis" role="tabpanel">
         <div class="text-end mb-3">
-          <button class="btn btn-outline-secondary" onclick="window.location.reload()">🔄 Actualiser</button>
-          <button class="btn btn-outline-primary" onclick="window.print()">🖨 Imprimer</button>
+          <button class="btn btn-outline-secondary" onclick="window.location.reload()"><i class="fas fa-sync-alt"></i> Actualiser</button>
+          <button class="btn btn-outline-primary" onclick="window.print()"><i class="fas fa-print"></i> Imprimer</button>
         </div>
 
         <div id="print-header" class="text-center mb-4 d-print-block">

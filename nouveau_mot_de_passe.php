@@ -63,9 +63,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
   <!-- icheck bootstrap -->
-  <link href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" />
+  <link href="plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" />
   <!-- Theme style -->
   <link href="dist/css/adminlte.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/concours.css" />
 
   <style>
     .login-box { width: 360px; }
@@ -80,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="login-logo">
         <img src="img/logo_ist.png" alt="Logo IST" />
       </div>
-      <a href="#" style="color: #ff1d15;" class="h1"><b>Concours</b> IST-D</a>
+      <a href="#" class="h1"><b>Concours</b> IST-D</a>
     </div>
 
     <div class="card-body">
@@ -89,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php if ($success): ?>
         <div class="alert alert-success text-center">
           Mot de passe mis à jour avec succès.<br />
-          <a href="login.php">Cliquez ici pour vous connecter</a>
+          <a href="login.php">Accéder à la page de connexion</a>
         </div>
       <?php else: ?>
         <?php if ($errors): ?>
@@ -125,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input
               type="password"
               class="form-control"
-              placeholder="Confirmer mot de passe"
+              placeholder="Confirmer le mot de passe"
               name="mdp2"
               required
               minlength="6"
@@ -147,9 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <!-- jQuery -->
-<script src="../../plugins/jquery/jquery.min.js"></script>
+<script src="plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
 

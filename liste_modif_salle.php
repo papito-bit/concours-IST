@@ -20,6 +20,8 @@ if(isset($_POST['update_salle'])) {
     $new_salle = $_POST['id_salle'];
     $update = $bdd->prepare("UPDATE candidats SET id_salle = ? WHERE id_candidat = ?");
     $update->execute([$new_salle, $id_candidat]);
+    require_once __DIR__ . '/journal_helper.php';
+    journaliser('salle_changement', 'Candidat n°' . (int) $id_candidat . ' -> salle n°' . (int) $new_salle, 'candidat', (int) $id_candidat);
     $_SESSION['msg_success'] = "Salle modifiée avec succès pour le candidat #$id_candidat.";
     header("Location: liste_modif_salle.php?centre=".$centreActif);
     exit;
@@ -130,8 +132,8 @@ $niveaux = ["DTS", "DTSS", "INGENIORAT"];
                           </select>
                       </td>
                       <td class="text-center">
-                          <button type="submit" name="update_salle" class="btn btn-sm btn-primary">
-                            💾
+                          <button type="submit" name="update_salle" class="btn btn-sm btn-primary" title="Enregistrer la salle">
+                            <i class="fas fa-save"></i>
                           </button>
                         </form>
                       </td>

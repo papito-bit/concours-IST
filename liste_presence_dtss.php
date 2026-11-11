@@ -92,7 +92,7 @@ body { background: #f8f9fa; }
 .signature { height: 35px; }
 .page-break { page-break-before: always; }
 
-/* ✅ Masquer les boutons à l'impression */
+/* Masquer les boutons à l'impression */
 @media print {
   #btnPrint, #btnRepartir, #btnAddSalle, #btnDeleteSalle, #btnAddCentre, #btnAddJury, .nav-tabs, .card-header, form, .no-print {
       display: none !important;
@@ -108,12 +108,12 @@ body { background: #f8f9fa; }
   <div class="card-header d-flex justify-content-between align-items-center">
     <h3 class="card-title">Fiche de présence — DTSS / INGÉNIORAT</h3>
     <div>
-      <button class="btn btn-sm btn-success" id="btnAddCentre" data-bs-toggle="modal" data-bs-target="#addCentreModal">🏫 Ajouter centre</button>
-      <button class="btn btn-sm btn-success" id="btnAddSalle" data-bs-toggle="modal" data-bs-target="#addSalleModal">➕ Ajouter salle</button>
-      <button class="btn btn-sm btn-primary" id="btnAddJury" data-bs-toggle="modal" data-bs-target="#addJuryModal">👨‍🏫 Ajouter jury</button>
-      <button class="btn btn-sm btn-danger" id="btnDeleteSalle" data-bs-toggle="modal" data-bs-target="#deleteSalleModal">🗑 Supprimer salle</button>
-      <a href="#" id="btnRepartir" class="btn btn-sm btn-primary" onclick="return confirmRepartir();">⚙ Répartir automatiquement</a>
-      <button id="btnPrint" class="btn btn-sm btn-secondary" onclick="window.print();">🖨 Imprimer</button>
+      <button class="btn btn-sm btn-success" id="btnAddCentre" data-bs-toggle="modal" data-bs-target="#addCentreModal"><i class="fas fa-school"></i> Ajouter un centre</button>
+      <button class="btn btn-sm btn-success" id="btnAddSalle" data-bs-toggle="modal" data-bs-target="#addSalleModal"><i class="fas fa-plus"></i> Ajouter une salle</button>
+      <button class="btn btn-sm btn-primary" id="btnAddJury" data-bs-toggle="modal" data-bs-target="#addJuryModal"><i class="fas fa-chalkboard-teacher"></i> Ajouter un jury</button>
+      <button class="btn btn-sm btn-danger" id="btnDeleteSalle" data-bs-toggle="modal" data-bs-target="#deleteSalleModal"><i class="fas fa-trash"></i> Supprimer une salle</button>
+      <a href="#" id="btnRepartir" class="btn btn-sm btn-primary" onclick="return confirmRepartir();"><i class="fas fa-cogs"></i> Répartir automatiquement</a>
+      <button id="btnPrint" class="btn btn-sm btn-secondary" onclick="window.print();"><i class="fas fa-print"></i> Imprimer</button>
     </div>
   </div>
 
@@ -206,7 +206,7 @@ body { background: #f8f9fa; }
 </div>
 </div>
 
-<!-- ✅ MODAL AJOUT JURY -->
+<!-- MODAL AJOUT JURY -->
 <div class="modal fade" id="addJuryModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">

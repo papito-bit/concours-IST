@@ -7,8 +7,9 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
   <link rel="stylesheet" href="dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="css/concours.css" />
 
   <style>
     .login-logo img {
@@ -32,7 +33,7 @@
       <div class="login-logo">
         <img src="img/logo_ist.png" alt="Logo IST" />
       </div>
-      <a href="#" style="color: #ff1d15;" class="h1"><b>Concours</b> IST-D</a>
+      <a href="#" class="h1"><b>Concours</b> IST-D</a>
     </div>
 
     <div class="card-body">
@@ -40,7 +41,7 @@
         Réinitialisation du mot de passe
       </p>
       <p class="text-muted small text-center">
-        Entrez votre email ou identifiant, nous vous enverrons un lien pour réinitialiser votre mot de passe.
+        Saisissez votre adresse électronique : un lien de réinitialisation vous sera envoyé.
       </p>
 
       <form id="resetForm" method="post">
@@ -48,7 +49,7 @@
           <input
             type="email"
             class="form-control"
-            placeholder="Votre email"
+            placeholder="Adresse électronique"
             name="email"
             required
             autofocus
@@ -75,8 +76,8 @@
   </div>
 </div>
 
-<script src="../../plugins/jquery/jquery.min.js"></script>
-<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/jquery/jquery.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
 
 <script>

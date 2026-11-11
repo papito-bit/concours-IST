@@ -1,7 +1,8 @@
 <?php
 // Starting session
-session_start();
+require_once __DIR__ . '/auth.php';
 require "connect.php";
+require_once __DIR__ . '/journal_helper.php';
 // Nettoyer les données saisies
 $nom = preg_replace('/\s+/', ' ', trim($_POST['nom']));
 $prenom = preg_replace('/\s+/', ' ', trim($_POST['prenom']));
@@ -25,7 +26,7 @@ $row = $stmt->fetch();
 
 if ($row['nb'] > 0) {
     // Doublon détecté
-    echo "<script>alert('⚠ Doublons ! Cet candidat existe déjà !'); window.history.back();</script>";
+    echo "<script>alert('Doublon détecté : ce candidat est déjà enregistré.'); window.history.back();</script>";
     exit;
 }
 
@@ -119,7 +120,10 @@ $req->execute(array(
 	$_SESSION['id_utilisateur'],
 	$_SESSION['id_annee_selected']));
 
-    $_SESSION['message']= $_POST['nom']." ".$_POST['prenom']." a été bien enregistrer";
+    $_SESSION['message']= $_POST['nom']." ".$_POST['prenom']." a été enregistré(e) avec succès.";
+	$nouvel_id = (int) $bdd->lastInsertId();
+	journaliser('candidat_ajout', trim($_POST['nom']).' '.trim($_POST['prenom']).' ('.$_POST['niveau'].' - '.$_POST['ecole'].')', 'candidat', $nouvel_id);
+	notifier('Nouveau candidat : '.trim($_POST['nom']).' '.trim($_POST['prenom']).' ('.$_POST['niveau'].' - '.$_POST['ecole'].')', 'liste_saisi.php');
 	
 	if ($_POST['ecole']=="EGI" AND $_POST['niveau']=="DTS") {header("Location:saisi_dts.php?ecole=EGI");}
 	if ($_POST['ecole']=="EGCGN" AND $_POST['niveau']=="DTS") {header("Location:saisi_dts.php?ecole=EGCGN");}

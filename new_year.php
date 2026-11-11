@@ -1,6 +1,9 @@
 <?php
 // Connexion à la base de données
+require_once __DIR__ . '/auth.php';
+exiger_role(['superadmin', 'admin']);
 require_once('connect.php');
+require_once __DIR__ . '/journal_helper.php';
 
 // Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -8,7 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $annee = trim($_POST['annee'] ?? '');
 
     if (empty($annee)) {
-        session_start();
         $_SESSION['error'] = "Aucune année reçue.";
         header('Location: index.php');
         exit();
@@ -22,8 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $exists = $stmt_check->fetchColumn();
 
         if ($exists > 0) {
-            session_start();
-            $_SESSION['error'] = "L'année scolaire $annee existe déjà.";
+                $_SESSION['error'] = "L'année scolaire $annee existe déjà.";
             header('Location: index.php');
             exit();
         }
@@ -36,15 +37,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql_insert = "INSERT INTO annees (libelle, active) VALUES (:annee, 1)";
         $stmt = $bdd->prepare($sql_insert);
         $stmt->execute(['annee' => $annee]);
+        journaliser('annee_ajout', 'Nouvelle année scolaire ' . $annee, 'annee', (int) $bdd->lastInsertId());
+        notifier('Nouvelle année scolaire créée : ' . $annee, 'index.php');
 
         // Message de succès
-        session_start();
         $_SESSION['message'] = "Nouvelle année scolaire $annee ajoutée avec succès.";
         header('Location: index.php');
         exit();
 
     } catch (PDOException $e) {
-        session_start();
         $_SESSION['error'] = "Erreur lors de l'ajout de l'année : " . $e->getMessage();
         header('Location: index.php');
         exit();

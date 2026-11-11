@@ -8,14 +8,21 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
     require 'get_annee.php';
 
     if (isset($_GET['annee'])) {
-        $_SESSION['id_annee_selected'] = $_GET['annee'];
+        // Sécurité : on n'accepte qu'une année qui existe vraiment (nombre entier)
+        $anneeDemandee = (int) $_GET['annee'];
+        foreach (($_SESSION['annees'] ?? []) as $a) {
+            if ((int) $a['id_annee'] === $anneeDemandee) {
+                $_SESSION['id_annee_selected'] = $anneeDemandee;
+                break;
+            }
+        }
     }
 
     // ===================== STATISTIQUES ANNUELLES =====================
 
     $sql = "SELECT niveau, ecole, COUNT(*) as nb
             FROM candidats
-            WHERE id_annee = " . $_SESSION['id_annee_selected'] . "
+            WHERE id_annee = " . (int) $_SESSION['id_annee_selected'] . "
             GROUP BY niveau, ecole";
 
     $result = $bdd->query($sql);
@@ -103,7 +110,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             </div>
 
             <div class="icon">
-                <i class="ion ion-stats-bars"></i>
+                <i class="fas fa-chart-bar"></i>
             </div>
         </div>
     </div>
@@ -116,7 +123,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             </div>
 
             <div class="icon">
-                <i class="ion ion-stats-bars"></i>
+                <i class="fas fa-chart-bar"></i>
             </div>
         </div>
     </div>
@@ -129,7 +136,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             </div>
 
             <div class="icon">
-                <i class="ion ion-stats-bars"></i>
+                <i class="fas fa-chart-bar"></i>
             </div>
         </div>
     </div>
@@ -142,11 +149,165 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             </div>
 
             <div class="icon">
-                <i class="ion ion-pie-graph"></i>
+                <i class="fas fa-chart-pie"></i>
             </div>
         </div>
     </div>
 
+</div>
+
+<?php
+// ===================== STATISTIQUES DÉTAILLÉES DE L'ANNÉE =====================
+$idA = (int) ($_SESSION['id_annee_selected'] ?? 0);
+$k = ['total' => 0, 'controles' => 0, 'affectes' => 0, 'femmes' => 0];
+$avec_notes = 0;
+$g_sexe = $g_type = $g_centre = $g_parcours = [];
+$activites = [];
+$est_admin_dash = in_array(strtolower($_SESSION['groupe'] ?? ''), ['admin', 'superadmin'], true);
+
+try {
+    $st = $bdd->prepare("SELECT COUNT(*) AS total, SUM(controle = 1) AS controles,
+                                SUM(id_salle IS NOT NULL) AS affectes, SUM(sexe = 'F') AS femmes
+                         FROM candidats WHERE id_annee = ?");
+    $st->execute([$idA]);
+    foreach ($st->fetch(PDO::FETCH_ASSOC) as $cle => $val) { $k[$cle] = (int) $val; }
+
+    $st = $bdd->prepare('SELECT COUNT(DISTINCT id_candidat) FROM notes WHERE id_annee = ?');
+    $st->execute([$idA]);
+    $avec_notes = (int) $st->fetchColumn();
+
+    $groupe = function ($sql) use ($bdd, $idA) {
+        $s = $bdd->prepare($sql);
+        $s->execute([$idA]);
+        return $s->fetchAll(PDO::FETCH_KEY_PAIR);
+    };
+    $g_sexe     = $groupe("SELECT sexe, COUNT(*) FROM candidats WHERE id_annee = ? GROUP BY sexe");
+    $g_type     = $groupe("SELECT COALESCE(NULLIF(type_candidat, ''), 'Non précisé'), COUNT(*) FROM candidats WHERE id_annee = ? GROUP BY 1");
+    $g_centre   = $groupe("SELECT COALESCE(cen.nom_centre, 'Sans centre'), COUNT(*) AS n FROM candidats c LEFT JOIN centre cen ON cen.id_centre = c.id_centre WHERE c.id_annee = ? GROUP BY 1 ORDER BY n DESC");
+    $g_parcours = $groupe("SELECT parcours1, COUNT(*) AS n FROM candidats WHERE id_annee = ? AND parcours1 IS NOT NULL AND parcours1 <> '' GROUP BY 1 ORDER BY n DESC LIMIT 10");
+
+    if ($est_admin_dash) {
+        $activites = $bdd->query('SELECT * FROM journal_activite ORDER BY id DESC LIMIT 8')->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (Throwable $e) {
+    // Une table manquante ne doit pas casser le tableau de bord
+}
+
+$pct = function ($n, $t) { return $t > 0 ? (int) round(100 * $n / $t) : 0; };
+$libelles_sexe = ['M' => 'Masculin', 'F' => 'Féminin'];
+$vers_js = function (array $g, array $renomme = []) {
+    $labels = [];
+    foreach (array_keys($g) as $c) { $labels[] = $renomme[$c] ?? (string) $c; }
+    return ['labels' => $labels, 'values' => array_map('intval', array_values($g))];
+};
+$statsJs = [
+    'sexe'     => $vers_js($g_sexe, $libelles_sexe),
+    'type'     => $vers_js($g_type),
+    'centre'   => $vers_js($g_centre),
+    'parcours' => $vers_js($g_parcours),
+];
+$libelles_actions = [
+    'connexion' => 'Connexion', 'connexion_echec' => 'Échec de connexion', 'deconnexion' => 'Déconnexion',
+    'candidat_ajout' => 'Candidat ajouté', 'candidat_modif' => 'Candidat modifié', 'notes_saisie' => 'Notes enregistrées',
+    'salle_changement' => 'Changement de salle', 'utilisateur_ajout' => 'Utilisateur ajouté',
+    'utilisateur_suppr' => 'Utilisateur supprimé', 'annee_ajout' => 'Année créée',
+];
+$e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
+?>
+
+<!-- ===================== INDICATEURS DE L'ANNÉE ===================== -->
+<div class="row">
+  <div class="col-md-3 col-sm-6 col-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-success"><i class="fas fa-check"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Dossiers contrôlés</span>
+        <span class="info-box-number"><?= $k['controles'] ?> / <?= $k['total'] ?></span>
+        <div class="progress"><div class="progress-bar bg-success" style="width: <?= $pct($k['controles'], $k['total']) ?>%"></div></div>
+        <span class="progress-description"><?= $pct($k['controles'], $k['total']) ?> % du total</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6 col-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-info"><i class="fas fa-door-open"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Affectés à une salle</span>
+        <span class="info-box-number"><?= $k['affectes'] ?> / <?= $k['total'] ?></span>
+        <div class="progress"><div class="progress-bar bg-info" style="width: <?= $pct($k['affectes'], $k['total']) ?>%"></div></div>
+        <span class="progress-description"><?= $pct($k['affectes'], $k['total']) ?> % du total</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6 col-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-warning"><i class="fas fa-edit"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Candidats notés</span>
+        <span class="info-box-number"><?= $avec_notes ?> / <?= $k['total'] ?></span>
+        <div class="progress"><div class="progress-bar bg-warning" style="width: <?= $pct($avec_notes, $k['total']) ?>%"></div></div>
+        <span class="progress-description"><?= $pct($avec_notes, $k['total']) ?> % du total</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6 col-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-danger"><i class="fas fa-venus"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Part de candidates</span>
+        <span class="info-box-number"><?= $pct($k['femmes'], $k['total']) ?> %</span>
+        <div class="progress"><div class="progress-bar bg-danger" style="width: <?= $pct($k['femmes'], $k['total']) ?>%"></div></div>
+        <span class="progress-description"><?= $k['femmes'] ?> femme(s) sur <?= $k['total'] ?></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-3">
+    <div class="card"><div class="card-header"><h3 class="card-title">Répartition par sexe</h3></div>
+      <div class="card-body"><div style="position:relative;height:240px"><canvas id="statSexe"></canvas></div></div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card"><div class="card-header"><h3 class="card-title">Type de candidat</h3></div>
+      <div class="card-body"><div style="position:relative;height:240px"><canvas id="statType"></canvas></div></div></div>
+  </div>
+  <div class="col-md-6">
+    <div class="card"><div class="card-header"><h3 class="card-title">Candidats par centre</h3></div>
+      <div class="card-body"><div style="position:relative;height:240px"><canvas id="statCentre"></canvas></div></div></div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="<?= $est_admin_dash ? 'col-md-8' : 'col-md-12' ?>">
+    <div class="card"><div class="card-header"><h3 class="card-title">Candidats par parcours (1er choix, 10 premiers)</h3></div>
+      <div class="card-body"><div style="position:relative;height:260px"><canvas id="statParcours"></canvas></div></div></div>
+  </div>
+  <?php if ($est_admin_dash) { ?>
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Dernières activités</h3>
+        <div class="card-tools"><a href="journal.php" class="btn btn-tool" title="Voir le journal complet"><i class="fas fa-external-link-alt"></i></a></div>
+      </div>
+      <div class="card-body p-0">
+        <?php if (!$activites) { ?>
+          <p class="text-muted m-3">Aucune activité enregistrée pour le moment.</p>
+        <?php } else { ?>
+          <ul class="list-group list-group-flush">
+            <?php foreach ($activites as $a) { ?>
+              <li class="list-group-item py-2" style="font-size:.85rem">
+                <strong><?= $e($libelles_actions[$a['action']] ?? $a['action']) ?></strong>
+                <span class="float-right text-muted"><?= $e(date('d/m H:i', strtotime($a['created_at']))) ?></span><br>
+                <span class="text-muted"><?= $e($a['nom_utilisateur']) ?><?= $a['details'] !== null && $a['details'] !== '' ? ' : ' . $e(mb_strimwidth($a['details'], 0, 60, '...')) : '' ?></span>
+              </li>
+            <?php } ?>
+          </ul>
+        <?php } ?>
+      </div>
+    </div>
+  </div>
+  <?php } ?>
 </div>
 
 <!-- ===================== SÉLECTEURS ===================== -->
@@ -432,17 +593,17 @@ function buildChart(id, grouped, years)
     const ctx = document.getElementById(id).getContext('2d');
 
     const colors = [
-        '#007bff',
-        '#28a745',
-        '#ffc107',
-        '#dc3545',
-        '#6f42c1',
-        '#17a2b8',
-        '#fd7e14',
-        '#20c997',
-        '#6610f2',
-        '#e83e8c',
-        '#adb5bd'
+        '#0A8FB0',
+        '#E5383B',
+        '#5BC7DC',
+        '#0B4F63',
+        '#8FD8E6',
+        '#F28B8C',
+        '#2C6E85',
+        '#B8E3EC',
+        '#7A8C99',
+        '#C9D6DC',
+        '#3A9DB8'
     ];
 
     const datasets = Object.keys(grouped).map((k, i) => ({
@@ -610,6 +771,35 @@ $(function () {
     );
 });
 
+</script>
+
+<script>
+(function () {
+  var couleurs = ['#0A8FB0','#E5383B','#5BC7DC','#0B4F63','#8FD8E6','#F28B8C','#2C6E85','#B8E3EC','#7A8C99','#C9D6DC'];
+  function dessiner(id, type, donnees) {
+    var el = document.getElementById(id);
+    if (!el) { return; }
+    if (!donnees.values.length) {
+      el.parentNode.innerHTML = '<p class="text-muted text-center mt-5">Aucune donnée disponible.</p>';
+      return;
+    }
+    var circulaire = (type === 'doughnut');
+    new Chart(el.getContext('2d'), {
+      type: type,
+      data: { labels: donnees.labels, datasets: [{ data: donnees.values, backgroundColor: circulaire ? couleurs : '#0A8FB0' }] },
+      options: {
+        maintainAspectRatio: false,
+        legend: { display: circulaire, position: 'bottom' },
+        scales: circulaire ? {} : { yAxes: [{ ticks: { beginAtZero: true, precision: 0 } }] }
+      }
+    });
+  }
+  var d = <?= json_encode($statsJs, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+  dessiner('statSexe', 'doughnut', d.sexe);
+  dessiner('statType', 'doughnut', d.type);
+  dessiner('statCentre', 'bar', d.centre);
+  dessiner('statParcours', 'bar', d.parcours);
+})();
 </script>
 
 <?php

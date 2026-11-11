@@ -158,7 +158,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             <select class="form-control" name="centre" required>
                 <option></option>
                 <?php
-                // ✅ Tous les centres sans filtre id_annee
+                // Tous les centres sans filtre id_annee
                 $centres = $bdd->query("SELECT * FROM centre ORDER BY nom_centre ASC")->fetchAll(PDO::FETCH_ASSOC);
                 foreach ($centres as $c) {
                     echo '<option value="' . htmlspecialchars($c['nom_centre']) . '">' . htmlspecialchars($c['nom_centre']) . '</option>';
@@ -174,7 +174,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             <select class="form-control" name="id_annee" required>
                 <option></option>
                 <?php
-                // ✅ Liste dynamique des années (table annees)
+                // Liste dynamique des années (table annees)
                 $annees = $bdd->query("SELECT * FROM annees ORDER BY id_annee DESC")->fetchAll(PDO::FETCH_ASSOC);
                 foreach ($annees as $a) {
                     echo '<option value="' . htmlspecialchars($a['id_annee']) . '">' . htmlspecialchars($a['annee']) . '</option>';

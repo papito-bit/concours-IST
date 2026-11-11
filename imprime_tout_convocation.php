@@ -101,7 +101,7 @@ $candidats = $req->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="no-print">
   <a href="convocation_dts.php" class="btn btn-secondary">⬅ Retour</a>
-  <button onclick="window.print()" class="btn btn-primary">🖨️ Imprimer toutes les convocations</button>
+  <button onclick="window.print()" class="btn btn-primary"><i class="fas fa-print"></i> Imprimer toutes les convocations</button>
 </div>
 
 <?php

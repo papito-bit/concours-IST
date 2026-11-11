@@ -1,130 +1,176 @@
-<?php session_start();session_destroy(); ?>
+<?php session_start(); session_destroy(); ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Concours IST-D</title>
+  <title>Connexion | Concours IST-D</title>
+  <link rel="icon" type="image/png" href="img/logo_ist.png">
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Theme style -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
 
   <style>
+    :root {
+      --piscine: #0A8FB0;
+      --piscine-fonce: #077391;
+      --piscine-profond: #0B6580;
+      --piscine-pale: #E3F5FA;
+      --rouge: #E5383B;
+      --encre: #17323D;
+      --gris: #5E7782;
+    }
+    * { box-sizing: border-box; }
     body {
-      background: url('img/bg_ist.jpg') no-repeat center center fixed;
-      background-size: cover;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--piscine-profond);
+      padding: 1.5rem;
     }
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
+    .connexion {
+      width: 100%;
+      max-width: 400px;
+      padding: 2.2rem 2rem 1.6rem;
+      border-radius: 4px;
+      border-top: 4px solid var(--rouge);
+      background: #fff;
     }
-    .login-logo img {
+    .connexion .logo {
+      display: block;
       width: 80px;
-      height: auto;
-      margin-bottom: 10px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      object-fit: contain;
     }
-    .login-box {
-      z-index: 2;
-      width: 360px;
+    .connexion h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--piscine-profond);
     }
-    .show-pass {
+    .connexion h1 span { color: var(--rouge); }
+    .connexion .sous-titre {
+      margin: .35rem 0 1.6rem;
+      text-align: center;
+      color: var(--gris);
+      font-size: .95rem;
+    }
+    .champ { position: relative; margin-bottom: 1rem; }
+    .champ i.icone {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--piscine);
+    }
+    .champ input {
+      width: 100%;
+      height: 46px;
+      padding: 0 46px 0 42px;
+      border: 1px solid #BBD6DF;
+      border-radius: 4px;
+      background: #fff;
+      color: var(--encre);
+      font-size: 1rem;
+    }
+    .champ input:focus {
+      outline: none;
+      border-color: var(--piscine);
+      box-shadow: 0 0 0 3px rgba(10, 143, 176, .18);
+    }
+    .champ .oeil {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--gris);
       cursor: pointer;
     }
+    .champ .oeil:hover { color: var(--piscine-fonce); background: var(--piscine-pale); }
+    .erreur {
+      margin-bottom: 1rem;
+      padding: .65rem .9rem;
+      border-left: 4px solid var(--rouge);
+      border-radius: 4px;
+      background: #FDECEC;
+      color: #C92A2D;
+      font-size: .92rem;
+      font-weight: 600;
+    }
+    .bouton {
+      width: 100%;
+      height: 46px;
+      border: 0;
+      border-radius: 4px;
+      background: var(--piscine);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .bouton:hover { background: var(--piscine-fonce); }
+    .bouton:disabled { opacity: .75; cursor: wait; }
+    .liens { margin-top: 1.1rem; text-align: center; font-size: .92rem; }
+    .liens a { color: var(--piscine-fonce); font-weight: 600; text-decoration: none; }
+    .liens a:hover { text-decoration: underline; }
+    .pied { margin-top: 1.4rem; text-align: center; color: var(--gris); font-size: .8rem; }
   </style>
 </head>
-<body class="hold-transition login-page">
-<div class="overlay"></div>
+<body>
 
-<div class="login-box">
-  <div class="card card-outline card-primary">
-    <div class="card-header text-center">
-      <div class="login-logo">
-        <img src="img/logo_ist.png" alt="Logo IST">
-      </div>
-      <a href="#" style="color: #ff1d15;" class="h1"><b>Concours</b> IST-D</a>
+<main class="connexion">
+  <img class="logo" src="img/logo_ist.png" alt="Logo de l'IST-D">
+  <h1><span>Concours</span> IST-D</h1>
+  <p class="sous-titre">Authentifiez-vous pour accéder à la gestion des concours.</p>
+
+  <?php if (isset($_GET['erreur'])): ?>
+    <div class="erreur"><i class="fas fa-exclamation-circle"></i> Identifiant ou mot de passe incorrect.</div>
+  <?php endif; ?>
+
+  <form action="login_traitement.php" method="post" id="formConnexion">
+    <div class="champ">
+      <i class="fas fa-user icone"></i>
+      <input type="text" name="email_concours" placeholder="Identifiant" required autofocus autocomplete="username">
     </div>
-
-    <div class="card-body">
-      <p class="login-box-msg">
-        <b>Année <?php echo date("Y") . "-" . (date("Y") + 1); ?></b>
-      </p>
-
-      <form action="login_traitement.php" method="post">
-        <!-- Champ identifiant -->
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Email ou identifiant" name="email_concours" required autofocus>
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-user"></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Champ mot de passe avec bouton œil -->
-        <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Mot de passe" name="mdp_concours" required autocomplete="off" id="passwordField">
-          <div class="input-group-append">
-            <div class="input-group-text show-pass" onclick="togglePassword()">
-              <span class="fas fa-eye" id="toggleIcon"></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Message d'erreur -->
-        <?php if (isset($_GET['erreur'])): ?>
-          <div class="alert alert-danger p-1 text-center">
-            Mauvais identifiant ou mot de passe !
-          </div>
-        <?php endif; ?>
-
-        <!-- Bouton -->
-        <div class="row">
-          <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block">Valider</button>
-          </div>
-        </div>
-      </form>
-
-      <!-- Option lien mot de passe oublié -->
-      <p class="mb-0 mt-3 text-center">
-        <a href="mot_de_passe_oublie.php">Mot de passe oublié ?</a>
-      </p>
+    <div class="champ">
+      <i class="fas fa-lock icone"></i>
+      <input type="password" name="mdp_concours" placeholder="Mot de passe" required autocomplete="current-password" id="motDePasse">
+      <button type="button" class="oeil" id="boutonOeil" aria-label="Afficher ou masquer le mot de passe">
+        <i class="fas fa-eye" id="iconeOeil"></i>
+      </button>
     </div>
-  </div>
-</div>
+    <button type="submit" class="bouton" id="boutonValider">Se connecter</button>
+  </form>
 
-<!-- jQuery -->
-<script src="../../plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="dist/js/adminlte.min.js"></script>
+  <p class="liens"><a href="mot_de_passe_oublie.php">Mot de passe oublié ?</a></p>
+  <p class="pied">Institut Supérieur de Technologie d'Antsiranana</p>
+</main>
 
-<!-- Script pour afficher/masquer le mot de passe -->
 <script>
-  function togglePassword() {
-    const pwdField = document.getElementById('passwordField');
-    const icon = document.getElementById('toggleIcon');
-    if (pwdField.type === "password") {
-      pwdField.type = "text";
-      icon.classList.remove('fa-eye');
-      icon.classList.add('fa-eye-slash');
-    } else {
-      pwdField.type = "password";
-      icon.classList.remove('fa-eye-slash');
-      icon.classList.add('fa-eye');
-    }
-  }
+  // Afficher ou masquer le mot de passe
+  document.getElementById('boutonOeil').addEventListener('click', function () {
+    var champ = document.getElementById('motDePasse');
+    var icone = document.getElementById('iconeOeil');
+    var visible = champ.type === 'text';
+    champ.type = visible ? 'password' : 'text';
+    icone.className = visible ? 'fas fa-eye' : 'fas fa-eye-slash';
+  });
+  // Empêche le double clic pendant la connexion
+  document.getElementById('formConnexion').addEventListener('submit', function () {
+    var b = document.getElementById('boutonValider');
+    b.disabled = true;
+    b.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Connexion en cours...';
+  });
 </script>
-
 </body>
 </html>

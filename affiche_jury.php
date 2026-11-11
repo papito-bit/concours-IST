@@ -115,8 +115,8 @@ foreach ($jurys as $jury) {
     <div class="card-header d-flex justify-content-between align-items-center">
       <h3 class="card-title">Gestion des jurys</h3>
       <div>
-        <button class="btn btn-sm btn-success no-print" data-bs-toggle="modal" data-bs-target="#addJuryModal">➕ Ajouter jury</button>
-        <button class="btn btn-sm btn-secondary no-print" onclick="imprimerSection()">🖨 Imprimer</button>
+        <button class="btn btn-sm btn-success no-print" data-bs-toggle="modal" data-bs-target="#addJuryModal"><i class="fas fa-plus"></i> Ajouter un jury</button>
+        <button class="btn btn-sm btn-secondary no-print" onclick="imprimerSection()"><i class="fas fa-print"></i> Imprimer</button>
       </div>
     </div>
 
@@ -166,10 +166,10 @@ foreach ($jurys as $jury) {
                         <td><?= htmlspecialchars($jury['capacite'] ?? '—'); ?></td>
                         <td class="text-center no-print">
                           <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                  data-bs-target="#editJuryModal<?= $jury['id_jury']; ?>">✏ Modifier</button>
+                                  data-bs-target="#editJuryModal<?= $jury['id_jury']; ?>"><i class="fas fa-pen"></i> Modifier</button>
                           <a href="?supprimer_jury=<?= $jury['id_jury']; ?>"
                              class="btn btn-sm btn-danger"
-                             onclick="return confirm('Supprimer ce jury ?');">🗑 Supprimer</a>
+                             onclick="return confirm('Confirmez-vous la suppression de ce jury ?');"><i class="fas fa-trash"></i> Supprimer</a>
                         </td>
                       </tr>
 
@@ -281,7 +281,7 @@ foreach ($jurys as $jury) {
 <script>
 function imprimerSection() {
   const activeTab = document.querySelector('.tab-pane.active .print-section');
-  if (!activeTab) return alert("Aucun contenu à imprimer !");
+  if (!activeTab) return alert("Aucun contenu à imprimer.");
   const original = document.body.innerHTML;
   document.body.innerHTML = activeTab.innerHTML;
   window.print();

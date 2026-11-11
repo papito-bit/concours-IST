@@ -6,7 +6,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
 
     require('connect.php');
 
-    // ✅ On récupère tous les candidats du niveau DTS (toutes écoles confondues)
+    // On récupère tous les candidats du niveau DTS (toutes écoles confondues)
     $requette = $bdd->prepare("
         SELECT can.*, cen.nom_centre AS centre, par.ecole_abrevie
         FROM candidats can

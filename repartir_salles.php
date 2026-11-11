@@ -69,13 +69,13 @@ try {
         $update = $bdd->prepare("UPDATE candidats SET id_salle = ? WHERE id_candidat = ?");
 
         if ($salleSpeciale) {
-            // 🔹 Cas spécial : Nouvelle salle détectée → envoyer uniquement là-bas
+            // Cas spécial : Nouvelle salle détectée → envoyer uniquement là-bas
             foreach ($candidatsSansSalle as $idCand) {
                 $update->execute([$salleSpeciale, $idCand]);
                 $nbTotalAffectations++;
             }
         } else {
-            // 🔹 Cas normal : round-robin sur toutes les salles
+            // Cas normal : round-robin sur toutes les salles
             $stmt = $bdd->prepare("
                 SELECT id_salle FROM candidats
                 WHERE id_annee = ? AND niveau = ? AND id_centre = ?
@@ -110,14 +110,14 @@ try {
     }
 
     $bdd->commit();
-    echo "<script>alert('✅ Répartition terminée avec succès pour $niveau. $nbTotalAffectations candidats affectés.'); 
+    echo "<script>alert('Répartition terminée pour le niveau $niveau : $nbTotalAffectations candidat(s) affecté(s).'); 
           window.location.href='" . htmlspecialchars($redirect_url, ENT_QUOTES) . "';</script>";
     exit;
 
 } catch (Exception $e) {
     if ($bdd->inTransaction()) $bdd->rollBack();
     $err = addslashes($e->getMessage());
-    echo "<script>alert('Erreur : $err'); window.location.href='" . htmlspecialchars($redirect_url, ENT_QUOTES) . "';</script>";
+    echo "<script>alert('Une erreur est survenue : $err'); window.location.href='" . htmlspecialchars($redirect_url, ENT_QUOTES) . "';</script>";
     exit;
 }
 ?>
