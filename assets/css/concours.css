@@ -1,0 +1,298 @@
+/* ==========================================================================
+   Concours IST-D : thème "flat" clair (aplats, bordures fines, aucune ombre)
+   Palette : bleu piscine clair, blanc, touches de rouge.
+   Se charge après adminlte.min.css.
+   ========================================================================== */
+:root {
+  --pool-100: #d5f0f7;
+  --pool-200: #b4e6f1;
+  --pool-300: #90e0ef;
+  --pool-400: #48cae4;
+  --pool-500: #00b4d8;   /* bleu piscine (accent) */
+  --pool-600: #0096b7;   /* boutons, liens */
+  --pool-700: #007f9c;   /* survol */
+  --pool-800: #0a6c85;   /* titres */
+  --pool-50:  #eef9fc;   /* aplats très clairs */
+  --red:      #d62f37;
+  --ink:      #12303a;
+  --muted:    #5f7c86;
+  --line:     #dcedf3;
+  --bg:       #f8fcfe;
+  --r:        4px;
+}
+
+body { color: var(--ink); }
+a { color: var(--pool-600); }
+a:hover { color: var(--pool-700); }
+.content-wrapper { background: var(--bg); }
+
+/* Menus et barres : jamais de soulignement (certaines pages chargent Bootstrap 5) */
+.main-sidebar a, .main-header a, .nav-link, .brand-link, .user-panel a,
+.navbar a, .dropdown-item, .btn { text-decoration: none !important; }
+
+/* Aucune ombre, aucun dégradé : design à plat */
+.card, .small-box, .info-box, .dropdown-menu, .modal-content, .main-header, .btn,
+.form-control, .custom-select, .progress, .alert, .badge, .list-group-item {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+.bg-gradient-primary, .bg-gradient-info, .bg-gradient-success, .bg-gradient-danger, .bg-gradient-warning {
+  background-image: none !important;
+}
+
+/* ---------- Palette (remplace les couleurs Bootstrap) ---------- */
+.bg-primary, .bg-info, .bg-gradient-primary, .btn-primary, .badge-primary, .badge-info, .btn-info {
+  background-color: var(--pool-600) !important;
+  border-color: var(--pool-600) !important;
+  color: #fff !important;
+}
+.bg-success, .btn-success, .badge-success {
+  background-color: #0b8aa7 !important;
+  border-color: #0b8aa7 !important;
+  color: #fff !important;
+}
+.bg-warning, .btn-warning, .badge-warning {
+  background-color: var(--pool-300) !important;
+  border-color: var(--pool-300) !important;
+  color: #0a4a5c !important;
+}
+.bg-danger, .btn-danger, .badge-danger {
+  background-color: var(--red) !important;
+  border-color: var(--red) !important;
+  color: #fff !important;
+}
+.bg-secondary, .btn-secondary, .badge-secondary {
+  background-color: #7fa3ae !important;
+  border-color: #7fa3ae !important;
+  color: #fff !important;
+}
+.bg-dark, .badge-dark { background-color: var(--pool-800) !important; color: #fff !important; }
+.btn-primary:hover, .btn-info:hover, .bg-gradient-primary:hover { background-color: var(--pool-700) !important; border-color: var(--pool-700) !important; }
+.btn-success:hover { background-color: #0a7590 !important; border-color: #0a7590 !important; }
+.btn-danger:hover { background-color: #b32229 !important; border-color: #b32229 !important; }
+.btn-secondary:hover { background-color: #6a8f9b !important; border-color: #6a8f9b !important; }
+.btn-default { background: #fff; border: 1px solid var(--line); color: var(--ink); }
+.btn-default:hover { background: var(--pool-50); }
+.btn-outline-primary { color: var(--pool-600); border-color: var(--pool-600); background: transparent; }
+.btn-outline-primary:hover { background: var(--pool-600); color: #fff; }
+.btn-outline-secondary { color: #4d6872; border-color: #9db5bd; background: transparent; }
+.btn-outline-secondary:hover { background: #7fa3ae; border-color: #7fa3ae; color: #fff; }
+.text-primary, .text-info { color: var(--pool-600) !important; }
+.text-success { color: var(--pool-800) !important; }
+.text-danger { color: var(--red) !important; }
+.text-muted { color: var(--muted) !important; }
+
+/* ---------- Barre du haut ---------- */
+.main-header.navbar { background: #fff; border-bottom: 1px solid var(--line); }
+.main-header .nav-link { color: var(--ink); font-weight: 600; }
+.main-header .nav-link:hover { color: var(--pool-600); }
+.main-header .nav-link i { margin-right: 4px; }
+.main-header .form-control {
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  background-color: #fff;
+  font-weight: 600;
+  height: calc(2rem + 2px);
+}
+.navbar-badge { font-weight: 700; border-radius: 2px; }
+
+/* ---------- Menu latéral (clair) ---------- */
+.main-sidebar { background: #eaf7fb !important; border-right: 1px solid #cfe6ee; }
+.brand-link {
+  background: #fff;
+  border-bottom: 1px solid #cfe6ee !important;
+  padding: .9rem 1rem;
+  color: var(--ink) !important;
+}
+.brand-link .brand-text { font-weight: 700; letter-spacing: .02em; color: var(--ink) !important; }
+.user-panel { border-bottom: 1px solid #cfe6ee !important; }
+.user-panel .info a { color: var(--ink) !important; font-weight: 600; }
+.sidebar .nav-sidebar .nav-link { color: #25505e; border-radius: 0; }
+.sidebar .nav-sidebar > .nav-item > .nav-link {
+  margin: 0;
+  width: auto;
+  border-left: 4px solid transparent;
+  padding-left: 1rem;
+}
+.sidebar .nav-sidebar > .nav-item > .nav-link:hover { background: #d3eef6; color: #0a4a5c; }
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active,
+.sidebar-dark-primary .nav-sidebar > .nav-item.menu-open > .nav-link.active {
+  background: var(--pool-600);
+  color: #fff;
+  border-left-color: var(--red);
+}
+.sidebar .nav-treeview { background: #f6fcfe; }
+.sidebar .nav-treeview > .nav-item > .nav-link { margin: 0; padding-left: 2rem; color: #3b6573; }
+.sidebar .nav-treeview > .nav-item > .nav-link:hover { background: #d3eef6; color: #0a4a5c; }
+.sidebar .nav-treeview > .nav-item > .nav-link.active {
+  background: transparent !important;
+  color: var(--pool-700) !important;
+  font-weight: 700;
+}
+
+/* ---------- Titre de page ---------- */
+.content-header { padding-top: 1.1rem; padding-bottom: .6rem; }
+.content-header h1 { font-size: 1.55rem; font-weight: 700; color: var(--pool-800); }
+.content-header h1:empty { display: none; }
+.content-header h1::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-top: 8px;
+  background: var(--red);
+}
+
+/* ---------- Cartes et indicateurs ---------- */
+.card { border: 1px solid var(--line); border-radius: var(--r); background: #fff; }
+.card-header {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--r) var(--r) 0 0;
+  font-weight: 600;
+}
+.card-header .card-title { font-weight: 700; color: var(--pool-800); }
+.card-footer { background: #fff; border-top: 1px solid var(--line); }
+.card.card-outline { border-top: 3px solid var(--pool-500); }
+
+/* Grandes cartes : fond clair, bandeau coloré à gauche, texte foncé */
+.small-box {
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--pool-500);
+  background: #fff !important;
+  transition: none;
+  overflow: hidden;
+}
+.small-box:hover { transform: none; }
+.small-box, .small-box p { color: var(--ink) !important; }
+.small-box .inner h3 { font-weight: 700; color: var(--pool-700) !important; }
+.small-box .icon > i { color: var(--pool-500) !important; opacity: .28; }
+.small-box.bg-info    { background: #e6f7fc !important; border-left-color: #00b4d8; }
+.small-box.bg-success { background: #d9f1f8 !important; border-left-color: #0096b7; }
+.small-box.bg-warning { background: #c9ebf4 !important; border-left-color: #0a6c85; }
+.small-box.bg-danger  { background: #fdeeee !important; border-left-color: var(--red); }
+.small-box.bg-danger .inner h3 { color: #b32229 !important; }
+.small-box.bg-danger .icon > i { color: var(--red) !important; }
+
+.info-box { border: 1px solid var(--line); border-radius: var(--r); background: #fff; }
+.info-box .info-box-icon { border-radius: var(--r) 0 0 var(--r); }
+.info-box-icon.bg-success { background: #d9f1f8 !important; color: #0a6c85 !important; }
+.info-box-icon.bg-info    { background: #e6f7fc !important; color: #0096b7 !important; }
+.info-box-icon.bg-warning { background: #c9ebf4 !important; color: #0a6c85 !important; }
+.info-box-icon.bg-danger  { background: #fdeeee !important; color: var(--red) !important; }
+.info-box .progress { height: 6px; border-radius: 2px; background: #e3f1f5; }
+.info-box .progress-bar { border-radius: 2px; }
+.progress-bar.bg-success { background-color: #0096b7 !important; }
+.progress-bar.bg-info    { background-color: #00b4d8 !important; }
+.progress-bar.bg-warning { background-color: #48cae4 !important; }
+.progress-bar.bg-danger  { background-color: var(--red) !important; }
+
+/* ---------- Boutons ---------- */
+.btn { border-radius: var(--r); font-weight: 600; }
+.btn i { margin-right: 4px; }
+.btn-tool i, .btn-sm i.mr-0 { margin-right: 0; }
+
+/* ---------- Formulaires ---------- */
+.form-control, .custom-select { border-radius: var(--r); border: 1px solid #c5dce4; }
+.form-control:focus, .custom-select:focus {
+  border-color: var(--pool-500);
+  outline: 2px solid rgba(0, 180, 216, .3);
+  outline-offset: 0;
+}
+label { font-weight: 600; color: #2f4f5a; }
+
+/* ---------- Tableaux ---------- */
+.table thead th {
+  border-top: 0;
+  border-bottom: 2px solid var(--pool-500);
+  font-size: .72rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--pool-800);
+  background: var(--pool-50);
+}
+.table td { vertical-align: middle; border-color: var(--line); }
+.table-hover tbody tr:hover { background: #f1fbfd; }
+.table-striped tbody tr:nth-of-type(odd) { background: #fafdfe; }
+
+/* ---------- Divers ---------- */
+.badge { border-radius: 2px; font-weight: 600; padding: .4em .65em; }
+.alert { border: 1px solid var(--line); border-radius: var(--r); }
+.alert-danger  { background: #fdeceb; border-color: #f3b9bc; color: #8f1d23; }
+.alert-warning { background: #fff7e5; border-color: #f1d9a0; color: #7a5a0d; }
+.alert-info    { background: var(--pool-50); border-color: #b6e3ef; color: #0a4a5c; }
+.modal-content { border: 1px solid var(--line); border-radius: var(--r); }
+.modal-header { border-bottom: 1px solid var(--line); background: var(--pool-50); border-radius: var(--r) var(--r) 0 0; }
+.modal-footer { border-top: 1px solid var(--line); }
+.page-item .page-link { border-radius: var(--r); margin: 0 2px; border: 1px solid var(--line); color: var(--pool-600); }
+.page-item.active .page-link { background: var(--pool-600); border-color: var(--pool-600); color: #fff; }
+.dropdown-menu { border: 1px solid var(--line); border-radius: var(--r); }
+.dropdown-item:hover { background: var(--pool-50); }
+.list-group-item { border-color: var(--line); }
+
+.main-footer { background: #fff; border-top: 1px solid var(--line); color: var(--muted); }
+
+/* Barres de défilement discrètes */
+* { scrollbar-width: thin; scrollbar-color: #b7d3dc transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #b7d3dc; }
+
+/* ---------- Téléphone ---------- */
+@media (max-width: 576px) {
+  .content-header h1 { font-size: 1.3rem; }
+  .small-box .inner h3 { font-size: 1.7rem; }
+}
+
+/* ---------- Impression : on ne garde que le contenu ---------- */
+@media print {
+  .main-sidebar, .main-header, .main-footer, .content-header { display: none !important; }
+  .content-wrapper { margin-left: 0 !important; background: #fff !important; }
+  .card, .small-box, .info-box { border: 1px solid #ccc !important; }
+}
+
+/* ==========================================================================
+   Ajouts : fil d'Ariane, titres de section, onglets, formulaires
+   ========================================================================== */
+.breadcrumb { background: transparent; font-size: .9rem; justify-content: flex-end; }
+.breadcrumb-item a { color: var(--pool-600); font-weight: 600; text-decoration: none !important; }
+.breadcrumb-item.active { color: var(--muted); }
+.breadcrumb-item + .breadcrumb-item::before { color: #9db5bd; }
+@media (max-width: 576px) { .breadcrumb { justify-content: flex-start; margin-top: .4rem; } }
+
+/* Titres de section des formulaires de saisie ("INFORMATION DU CANDIDAT", etc.) */
+.carre, .carre.row { text-align: left !important; margin: 1.4rem 0 .8rem; padding: 0 0 .45rem; border-bottom: 1px solid var(--line); }
+.carre h4, .carre h3 {
+  display: block; width: 100%; margin: 0; padding-left: .7rem;
+  border-left: 4px solid var(--red);
+  font-size: 1rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--pool-800);
+}
+
+/* Onglets */
+.nav-tabs { border-bottom: 1px solid var(--line); }
+.nav-tabs .nav-link { border: 0; border-bottom: 3px solid transparent; border-radius: 0; color: var(--muted); font-weight: 600; text-decoration: none !important; }
+.nav-tabs .nav-link:hover { color: var(--pool-700); border-bottom-color: var(--pool-200); }
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+  color: var(--pool-800); background: transparent; border-bottom-color: var(--red);
+}
+.nav-pills .nav-link { border-radius: var(--r); font-weight: 600; }
+.nav-pills .nav-link.active { background: var(--pool-600); color: #fff; }
+
+/* Formulaires */
+.content .form-group { margin-bottom: 1.1rem; }
+.content input[type="submit"].btn, .content button[type="submit"].btn { min-height: 40px; }
+.content .form-control { min-height: 38px; }
+.content .form-control[readonly], .content .form-control:disabled { background: #f1f7f9; }
+select.form-control { background-color: #fff; }
+
+/* Tableaux de pages d'état */
+.table-bordered { border: 1px solid var(--line); }
+.table-bordered th, .table-bordered td { border-color: var(--line); }
+.table-sm td, .table-sm th { padding: .45rem .6rem; }
+
+/* Boutons d'action dans les listes */
+.btn-sm { padding: .25rem .6rem; }
+a.btn { text-decoration: none !important; }
+
+/* Messages courts (succès, erreur) */
+.alert-success { background: var(--pool-50); border-color: #b6e3ef; color: #0a4a5c; }

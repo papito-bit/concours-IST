@@ -1,0 +1,19 @@
+# Concours IST-D : protections de base (Apache 2.4)
+# Si le site affiche une erreur 500 après ajout de ce fichier, supprime-le.
+
+Options -Indexes
+
+# Fichiers qui ne doivent jamais être téléchargés
+<FilesMatch "\.(sql|md|rar|zip|bak|log|ini|bat|txt)$">
+    Require all denied
+</FilesMatch>
+
+# Dépôt Git
+RedirectMatch 404 /\.git
+
+# Cookies de session plus sûrs
+<IfModule php_module>
+    php_flag session.cookie_httponly On
+    php_flag session.use_strict_mode On
+    php_value session.cookie_samesite Lax
+</IfModule>

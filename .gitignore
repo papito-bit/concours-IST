@@ -1,9 +1,5 @@
-﻿concours.rar
-*.sql
-connect.php
-phpinfo.php
-adminer.php
-test.php
-*Copie*
-plugins/
-dist/
+!sql/0*.sql
+
+assets/plugins/
+assets/dist/
+config/connect.php

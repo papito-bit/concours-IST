@@ -4,8 +4,8 @@ session_start();
 
 if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
 
-    require 'connect.php';
-    require 'get_annee.php';
+    require __DIR__ . '/config/connect.php';
+    require __DIR__ . '/includes/get_annee.php';
 
     if (isset($_GET['annee'])) {
         // Sécurité : on n'accepte qu'une année qui existe vraiment (nombre entier)
@@ -110,7 +110,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             </div>
 
             <div class="icon">
-                <i class="fas fa-chart-bar"></i>
+                <i class="fas fa-graduation-cap"></i>
             </div>
         </div>
     </div>
@@ -123,7 +123,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             </div>
 
             <div class="icon">
-                <i class="fas fa-chart-bar"></i>
+                <i class="fas fa-graduation-cap"></i>
             </div>
         </div>
     </div>
@@ -136,7 +136,7 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
             </div>
 
             <div class="icon">
-                <i class="fas fa-chart-bar"></i>
+                <i class="fas fa-graduation-cap"></i>
             </div>
         </div>
     </div>
@@ -145,11 +145,11 @@ if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['email_concours'])) {
         <div class="small-box bg-danger">
             <div class="inner">
                 <h3><?= $total_candidats ?></h3>
-                <p>Total candidats</p>
+                <p>Total des candidats</p>
             </div>
 
             <div class="icon">
-                <i class="fas fa-chart-pie"></i>
+                <i class="fas fa-users"></i>
             </div>
         </div>
     </div>
@@ -209,7 +209,7 @@ $statsJs = [
 $libelles_actions = [
     'connexion' => 'Connexion', 'connexion_echec' => 'Échec de connexion', 'deconnexion' => 'Déconnexion',
     'candidat_ajout' => 'Candidat ajouté', 'candidat_modif' => 'Candidat modifié', 'notes_saisie' => 'Notes enregistrées',
-    'salle_changement' => 'Changement de salle', 'utilisateur_ajout' => 'Utilisateur ajouté',
+    'salle_changement' => 'Changement de salle', 'utilisateur_ajout' => 'Utilisateur ajouté', 'utilisateur_modif' => 'Utilisateur modifié',
     'utilisateur_suppr' => 'Utilisateur supprimé', 'annee_ajout' => 'Année créée',
 ];
 $e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
@@ -232,7 +232,7 @@ $e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); 
     <div class="info-box">
       <span class="info-box-icon bg-info"><i class="fas fa-door-open"></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">Affectés à une salle</span>
+        <span class="info-box-text">Affectés en salle</span>
         <span class="info-box-number"><?= $k['affectes'] ?> / <?= $k['total'] ?></span>
         <div class="progress"><div class="progress-bar bg-info" style="width: <?= $pct($k['affectes'], $k['total']) ?>%"></div></div>
         <span class="progress-description"><?= $pct($k['affectes'], $k['total']) ?> % du total</span>
@@ -254,7 +254,7 @@ $e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); 
     <div class="info-box">
       <span class="info-box-icon bg-danger"><i class="fas fa-venus"></i></span>
       <div class="info-box-content">
-        <span class="info-box-text">Part de candidates</span>
+        <span class="info-box-text">Proportion de candidates</span>
         <span class="info-box-number"><?= $pct($k['femmes'], $k['total']) ?> %</span>
         <div class="progress"><div class="progress-bar bg-danger" style="width: <?= $pct($k['femmes'], $k['total']) ?>%"></div></div>
         <span class="progress-description"><?= $k['femmes'] ?> femme(s) sur <?= $k['total'] ?></span>
@@ -280,19 +280,19 @@ $e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); 
 
 <div class="row">
   <div class="<?= $est_admin_dash ? 'col-md-8' : 'col-md-12' ?>">
-    <div class="card"><div class="card-header"><h3 class="card-title">Candidats par parcours (1er choix, 10 premiers)</h3></div>
+    <div class="card"><div class="card-header"><h3 class="card-title">Candidats par parcours (premier choix, dix premiers)</h3></div>
       <div class="card-body"><div style="position:relative;height:260px"><canvas id="statParcours"></canvas></div></div></div>
   </div>
   <?php if ($est_admin_dash) { ?>
   <div class="col-md-4">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Dernières activités</h3>
-        <div class="card-tools"><a href="journal.php" class="btn btn-tool" title="Voir le journal complet"><i class="fas fa-external-link-alt"></i></a></div>
+        <h3 class="card-title">Activité récente</h3>
+        <div class="card-tools"><a href="modules/administration/journal.php" class="btn btn-tool" title="Consulter le journal complet"><i class="fas fa-external-link-alt"></i></a></div>
       </div>
       <div class="card-body p-0">
         <?php if (!$activites) { ?>
-          <p class="text-muted m-3">Aucune activité enregistrée pour le moment.</p>
+          <p class="text-muted m-3">Aucune activité enregistrée.</p>
         <?php } else { ?>
           <ul class="list-group list-group-flush">
             <?php foreach ($activites as $a) { ?>
@@ -526,9 +526,9 @@ function renderYearSelectors($idPrefix, $annees)
 
 <!-- ===================== SCRIPTS ===================== -->
 
-<script src="plugins/chart.js/Chart.min.js"></script>
+<script src="assets/plugins/chart.js/Chart.min.js"></script>
 
-<script src="plugins/jquery-knob/jquery.knob.min.js"></script>
+<script src="assets/plugins/jquery-knob/jquery.knob.min.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -593,17 +593,17 @@ function buildChart(id, grouped, years)
     const ctx = document.getElementById(id).getContext('2d');
 
     const colors = [
-        '#0A8FB0',
-        '#E5383B',
-        '#5BC7DC',
-        '#0B4F63',
-        '#8FD8E6',
-        '#F28B8C',
-        '#2C6E85',
-        '#B8E3EC',
-        '#7A8C99',
-        '#C9D6DC',
-        '#3A9DB8'
+        '#00b4d8',
+        '#d62f37',
+        '#0096b7',
+        '#90e0ef',
+        '#0a6c85',
+        '#f08a8e',
+        '#48cae4',
+        '#7fa3ae',
+        '#007f9c',
+        '#b4e6f1',
+        '#cfe3ea'
     ];
 
     const datasets = Object.keys(grouped).map((k, i) => ({
@@ -775,18 +775,18 @@ $(function () {
 
 <script>
 (function () {
-  var couleurs = ['#0A8FB0','#E5383B','#5BC7DC','#0B4F63','#8FD8E6','#F28B8C','#2C6E85','#B8E3EC','#7A8C99','#C9D6DC'];
+  var couleurs = ['#00b4d8','#d62f37','#0096b7','#90e0ef','#0a6c85','#f08a8e','#48cae4','#7fa3ae','#007f9c','#b4e6f1'];
   function dessiner(id, type, donnees) {
     var el = document.getElementById(id);
     if (!el) { return; }
     if (!donnees.values.length) {
-      el.parentNode.innerHTML = '<p class="text-muted text-center mt-5">Aucune donnée disponible.</p>';
+      el.parentNode.innerHTML = '<p class="text-muted text-center mt-5">Aucune donnée</p>';
       return;
     }
     var circulaire = (type === 'doughnut');
     new Chart(el.getContext('2d'), {
       type: type,
-      data: { labels: donnees.labels, datasets: [{ data: donnees.values, backgroundColor: circulaire ? couleurs : '#0A8FB0' }] },
+      data: { labels: donnees.labels, datasets: [{ data: donnees.values, backgroundColor: circulaire ? couleurs : '#00b4d8' }] },
       options: {
         maintainAspectRatio: false,
         legend: { display: circulaire, position: 'bottom' },
@@ -808,7 +808,7 @@ $content = ob_get_clean();
 
 $menu = "Tableau de bord";
 
-require('template.php');
+require __DIR__ . '/includes/template.php';
 
 } else {
 
